@@ -81,15 +81,14 @@ class Pagination extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     // When current page change, fix focused style of prev item
-    // A hacky solution of https://github.com/ant-design/ant-design/issues/8948
+    // A hacky solution of https://github.com/ant-design/ant-design/issues/8948 & https://github.com/ant-design/ant-design/issues/29512
     const { prefixCls } = this.props;
-    if (prevState.current !== this.state.current && this.paginationNode) {
-      const lastCurrentNode = this.paginationNode.querySelector(
-        `.${prefixCls}-item-${prevState.current}`,
-      );
-      if (lastCurrentNode && document.activeElement === lastCurrentNode) {
-        lastCurrentNode.blur();
-      }
+    if (prevState.current !== this.state.current) {
+      setTimeout(() => {
+        if (document.activeElement?.classList?.contains(`${prefixCls}-item`)) {
+          document.activeElement.blur();
+        }
+      }, 0);
     }
   }
 
@@ -165,10 +164,6 @@ class Pagination extends React.Component {
     }
     return value;
   }
-
-  savePaginationNode = (node) => {
-    this.paginationNode = node;
-  };
 
   isValid = (page) => isInteger(page) && page !== this.state.current;
 
@@ -447,7 +442,6 @@ class Pagination extends React.Component {
             className,
           )}
           style={style}
-          ref={this.savePaginationNode}
           {...dataOrAriaAttributeProps}
         >
           <li
